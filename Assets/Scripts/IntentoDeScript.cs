@@ -18,13 +18,16 @@ public class IntentoDeScript : MonoBehaviour
 
      */
 
-    public enum StateSelector{
+    public enum StateSelector
+    {
         Waiting,
-        Selection,
+        SelectionMove,
+        SelectionRotation,
+        SelectionScale,
         Moving,
         Realease,
-        Scale,
-        Rotation,
+        Rotating,
+        Scaling,
         //... the states that we need
     }
 
@@ -40,15 +43,31 @@ public class IntentoDeScript : MonoBehaviour
         //Instead of if we can use Switch
         switch (currentState)
         {
-            case StateSelector.Waiting:
-                currentState = StateSelector.Selection;
-                break;
+            /*case StateSelector.Waiting:
+                currentState = StateSelector.SelectionMove;
+                break;*/
 
             case StateSelector.Moving:
                 MoveItem();
                 break;
 
-            case StateSelector.Selection:
+            case StateSelector.Rotating:
+                RotateItem();
+                break;
+
+            case StateSelector.Scaling:
+                ScaleItem();
+                break;
+
+            case StateSelector.SelectionMove:
+                SelectItem();
+                break;
+
+            case StateSelector.SelectionRotation:
+                SelectItem();
+                break;
+
+            case StateSelector.SelectionScale:
                 SelectItem();
                 break;
 
@@ -78,9 +97,9 @@ public class IntentoDeScript : MonoBehaviour
             MoveItem();
         }*/
     }
-        
 
-    void SelectItem()
+
+    public void SelectItem()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -98,17 +117,29 @@ public class IntentoDeScript : MonoBehaviour
                     //The hitted object is the selected object
                     selectedItem = hitInfo.collider.gameObject;
 
-                    currentState = StateSelector.Moving;
+                    switch (currentState)
+                    {
+                        case StateSelector.SelectionMove:
+                            currentState = StateSelector.Moving;
+                            break;
+
+                        case StateSelector.SelectionRotation:
+                            currentState = StateSelector.Rotating;
+                            break;
+
+                        case StateSelector.SelectionScale:
+                            currentState = StateSelector.Scaling;
+                            break;
+                    }
 
                     //Hide Cursor
                     Cursor.visible = false;
                 }
             }
         }
-        
     }
 
-    void MoveItem()
+    public void MoveItem()
     {
         //Send Ray from cam to the mouse's position
         Vector3 pos = Input.mousePosition;
@@ -133,7 +164,31 @@ public class IntentoDeScript : MonoBehaviour
         }
     }
 
-    void RealeaseItem()
+    public void ButtonMoveItem()
+    {
+        currentState = StateSelector.SelectionMove;
+    }
+    public void RotateItem()
+    {
+        
+    }
+
+    public void ButtomRotateItem()
+    {
+        currentState = StateSelector.SelectionRotation;
+    }
+
+    public void ScaleItem()
+    {
+        
+    }
+
+    public void ButtomScaleItem()
+    {
+        currentState = StateSelector.SelectionScale;
+    }
+
+    public void RealeaseItem()
     {
         //Realease the object
         selectedItem = null;
