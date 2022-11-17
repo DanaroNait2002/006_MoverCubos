@@ -44,11 +44,11 @@ public class CubeSelector : MonoBehaviour
                 RaycastHit hitInfo2;
                 if (Physics.Raycast(rayo2, out hitInfo2))
                 {
-                    mOffset = new Vector3(0f, selectedObject.transform.position.y, -0.75f);
-                    var tmpPos = mOffset;
+                    /*mOffset = new Vector3(0f, selectedObject.transform.position.y, -0.75f);
+                    var tmpPos = mOffset;*/
 
                     selectedObject.SetActive(true);
-                    selectedObject.transform.position = hitInfo2.point + tmpPos;
+                    selectedObject.transform.position = hitInfo2.point + Vector3.up * selectedObject.transform.localScale.y/2; // + tmpPos;
                 }
                 selectedObject = null;
                 Cursor.visible = true;
@@ -58,15 +58,16 @@ public class CubeSelector : MonoBehaviour
         //Condicional de que el objeto clickado no es igual a nulo
         if (selectedObject != null)
         {
+            selectedObject.SetActive(false);
+
             Ray rayo2 = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo2;
             if (Physics.Raycast(rayo2, out hitInfo2))
             {
-                //mOffset = new Vector3(0f, selectedObject.transform.position.y, -0.75f);
-                //var tmpPos = mOffset;
+                selectedObject.SetActive(true);
+                selectedObject.transform.position = hitInfo2.point + Vector3.up * selectedObject.transform.localScale.y / 2; // + tmpPos;
 
                 selectedObject.SetActive(true);
-                selectedObject.transform.position = hitInfo2.point;// + tmpPos;
             }
 
         }
@@ -79,7 +80,8 @@ public class CubeSelector : MonoBehaviour
 
 
 
-    /*private GameObject selectedObject;
+    /* COPIADO TUTORIAL
+    private GameObject selectedObject;
     Vector3 mOffset;
 
     void Update()
