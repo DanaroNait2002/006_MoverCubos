@@ -28,6 +28,10 @@ public class IntentoDeScript : MonoBehaviour
         Realease,
         Rotating,
         Scaling,
+        SelectTypeCreation,
+        CreatingCube,
+        CreatingSphere,
+        CreatingCylinder,
         //... the states that we need
     }
 
@@ -35,8 +39,15 @@ public class IntentoDeScript : MonoBehaviour
     [SerializeField]
     StateSelector currentState = StateSelector.Waiting;
 
+    [SerializeField]
+    GameObject mainCanvas, creationCanvas;
+
+
     //The selected object variable
-    public GameObject selectedItem;
+    public GameObject selectedItem, prefabCube, prefabSphere, prefabCylinder;
+
+    Vector2 mousePos;
+
 
     private void Update()
     {
@@ -58,6 +69,18 @@ public class IntentoDeScript : MonoBehaviour
             case StateSelector.Scaling:
                 ScaleItem();
                 break;
+
+            /*case StateSelector.CreatingCube:
+                CreatingCube();
+                break;
+
+            case StateSelector.CreatingSphere:
+                CreatingSphere();
+                break;
+
+            case StateSelector.CreatingCylinder:
+                CreatingCylinder();
+                break;*/
 
             case StateSelector.SelectionMove:
                 SelectItem();
@@ -117,6 +140,7 @@ public class IntentoDeScript : MonoBehaviour
                     //The hitted object is the selected object
                     selectedItem = hitInfo.collider.gameObject;
 
+                    //El creo otra función para esto
                     switch (currentState)
                     {
                         case StateSelector.SelectionMove:
@@ -152,7 +176,7 @@ public class IntentoDeScript : MonoBehaviour
         if (Physics.Raycast(rayo, out hitInfo))
         {
             //Moving the object
-            selectedItem.transform.position = hitInfo.point + ((Vector3.up * selectedItem.transform.localScale.y) / 2);
+            selectedItem.transform.position = hitInfo.point + ((Vector3.up * selectedItem.transform.localScale.y) * 1.5f);
         }
 
         //Show the object
@@ -170,23 +194,82 @@ public class IntentoDeScript : MonoBehaviour
     }
     public void RotateItem()
     {
-        
+        Vector2 mouseDelta = mousePos - (Vector2)Input.mousePosition;
+        selectedItem.transform.Rotate(mouseDelta.y, mouseDelta.x, 0f);
+
+        mousePos = Input.mousePosition;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            selectedItem.GetComponent<Rigidbody>().isKinematic = false;
+            currentState = StateSelector.Realease;
+        }
+
     }
 
-    public void ButtomRotateItem()
+    public void ButtonRotateItem()
     {
         currentState = StateSelector.SelectionRotation;
     }
 
     public void ScaleItem()
     {
-        
+        selectedItem.transform.localScale += Vector3.one * Input.mouseScrollDelta.y;
+
+        if (selectedItem.transform.localScale.x <= 1f)
+        {
+            selectedItem.transform.localScale = new Vector3(1f, 1f, 1f);
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            currentState = StateSelector.Realease;
+        }
     }
 
-    public void ButtomScaleItem()
+    public void ButtonScaleItem()
     {
         currentState = StateSelector.SelectionScale;
     }
+
+    public void ButtonCreateItem()
+    {
+        mainCanvas.SetActive(false);
+        creationCanvas.SetActive(true);
+
+        //Crear un cubo, esfera o cilindro (+opcion de cancelar) en un canva
+    }
+
+    public void Creating(GameObject prefab)
+    {
+        selectedItem = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+
+        currentState = StateSelector.Moving;
+    }
+
+    /*public void CreatingCube()
+    {
+        selectedItem =  Instantiate(prefabCube);
+        //selectedItem = prefabCube;
+
+        currentState = StateSelector.Moving;
+    }
+
+    public void CreatingSphere()
+    {
+        selectedItem = Instantiate(prefabSphere);
+        //selectedItem = prefabSphere;
+
+        currentState = StateSelector.Moving;
+    }
+
+    public void CreatingCylinder()
+    {
+        selectedItem = Instantiate(prefabCylinder, Vector3.zero, Quaternion.identity);
+        //selectedItem = prefabCylinder;
+
+        currentState = StateSelector.Moving;
+    }*/
 
     public void RealeaseItem()
     {
@@ -197,5 +280,12 @@ public class IntentoDeScript : MonoBehaviour
 
         //Show Cursor
         Cursor.visible = true;
+    }
+
+    public void ButtonCancel()
+    {
+        mainCanvas.SetActive(true);
+        creationCanvas.SetActive(false);
+        currentState = StateSelector.Waiting;
     }
 }
