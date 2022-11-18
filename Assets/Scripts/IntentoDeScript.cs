@@ -244,6 +244,8 @@ public class IntentoDeScript : MonoBehaviour
     {
         selectedItem = Instantiate(prefab, Vector3.zero, Quaternion.identity);
 
+        selectedItem.GetComponent<MeshRenderer>().material.color = Random.ColorHSV();
+
         currentState = StateSelector.Moving;
     }
 
